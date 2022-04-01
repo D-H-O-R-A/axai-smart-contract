@@ -5,11 +5,6 @@
   "value": true
  },
  {
-  "key": "axai",
-  "type": "string",
-  "value": "<axai-asset-id>"
- },
- {
   "key": "usdnaxai",
   "type": "string",
   "value": "<LP-asset-id>"
