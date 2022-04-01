@@ -1,67 +1,67 @@
 [
  {
-  "key": “activate”,
+  "key": "activate",
   "type": "boolean",
   "value": true
  },
  {
-  "key": “axai”,
+  "key": "axai",
   "type": "string",
-  "value": “<axai-asset-id>”
+  "value": "<axai-asset-id>"
  },
  {
-  "key": “usdnaxai”,
+  "key": "usdnaxai",
   "type": "string",
-  "value": “<LP-asset-id>”
+  "value": "<LP-asset-id>"
  },
  {
-  "key": “eurnaxai”,
+  "key": "eurnaxai",
   "type": "string",
-  "value": “<LP-asset-id>”
+  "value": "<LP-asset-id>"
  },
  {
-  "key": “usdtaxai”,
+  "key": "usdtaxai",
   "type": "string",
-  "value": “<LP-asset-id>”
+  "value": "<LP-asset-id>"
  },
  {
-  "key": “ngnnaxai”,
+  "key": "ngnnaxai",
   "type": "string",
-  "value": “<LP-asset-id>”
+  "value": "<LP-asset-id>"
  },
  {
-  "key": “wavesaxai”,
+  "key": "wavesaxai",
   "type": "string",
-  "value": “<LP-asset-id>”
+  "value": "<LP-asset-id>"
  },
  {
-  "key": “wavesaxai_address_contract”,
+  "key": "wavesaxai_address_contract",
   "type": "string",
-  "value": “<address-contract-staker-this-pair>”
+  "value": "<address-contract-staker-this-pair>"
  },
  {
-  "key": “eurnaxai_address_contract”,
+  "key": "eurnaxai_address_contract",
   "type": "string",
-  "value": “<address-contract-staker-this-pair>”
+  "value": "<address-contract-staker-this-pair>"
  },
  {
-  "key": “ngnnaxai_address_contract”,
+  "key": "ngnnaxai_address_contract",
   "type": "string",
-  "value": “<address-contract-staker-this-pair>”
+  "value": "<address-contract-staker-this-pair>"
  },
  {
-  "key": “usdnaxai_address_contract”,
+  "key": "usdnaxai_address_contract",
   "type": "string",
-  "value": “<address-contract-staker-this-pair>”
+  "value": "<address-contract-staker-this-pair>"
  },
  {
-  "key": “usdtaxai_address_contract”,
+  "key": "usdtaxai_address_contract",
   "type": "string",
-  "value": “<address-contract-staker-this-pair>”
+  "value": "<address-contract-staker-this-pair>"
  },
  {
-  "key": “waves_axai_swap”,
+  "key": "waves_axai_swap",
   "type": "string",
-  "value": “<address_swap_contract>”
+  "value": "<address_swap_contract>"
  }
 ]
