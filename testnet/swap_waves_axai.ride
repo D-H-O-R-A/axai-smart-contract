@@ -8,7 +8,7 @@ let axaip = "axai"
 let stakerWavesAxai = "wavesaxai_address_contract"
 let exchangeRate = 5
 let adiminOracle = Address(base58'3MqGE8yKJmPuwn7sXFLo56rhW9tnMapDDRq')
-let axai = base58'496Ep8DDZwru81HjT5YAj7vUvYUi4zxyrHCgkD9GXmwe'
+let axai = adiminOracle.getString(axaip).valueOrErrorMessage("asset id for axai is not defined").fromBase58String()
 let staker = Address(adiminOracle.getString(stakerWavesAxai).valueOrErrorMessage("address for staker for AxAi/Waves is not defined").fromBase58String())
 
 @Callable(i)
