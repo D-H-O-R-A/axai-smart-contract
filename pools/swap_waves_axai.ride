@@ -1,3 +1,5 @@
+#contract address in testnet 3MrmGzcV66AnwcVLXqEBY5n9c3bWhkqXhEU
+
 {-# STDLIB_VERSION 5     #-}
 {-# SCRIPT_TYPE ACCOUNT  #-}
 {-# CONTENT_TYPE DAPP    #-}
