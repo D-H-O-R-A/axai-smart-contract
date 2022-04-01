@@ -1,0 +1,67 @@
+[
+ {
+  "key": “activate”,
+  "type": "boolean",
+  "value": true
+ },
+ {
+  "key": “axai”,
+  "type": "string",
+  "value": “<axai-asset-id>”
+ },
+ {
+  "key": “usdnaxai”,
+  "type": "string",
+  "value": “<LP-asset-id>”
+ },
+ {
+  "key": “eurnaxai”,
+  "type": "string",
+  "value": “<LP-asset-id>”
+ },
+ {
+  "key": “usdtaxai”,
+  "type": "string",
+  "value": “<LP-asset-id>”
+ },
+ {
+  "key": “ngnnaxai”,
+  "type": "string",
+  "value": “<LP-asset-id>”
+ },
+ {
+  "key": “wavesaxai”,
+  "type": "string",
+  "value": “<LP-asset-id>”
+ },
+ {
+  "key": “wavesaxai_address_contract”,
+  "type": "string",
+  "value": “<address-contract-staker-this-pair>”
+ },
+ {
+  "key": “eurnaxai_address_contract”,
+  "type": "string",
+  "value": “<address-contract-staker-this-pair>”
+ },
+ {
+  "key": “ngnnaxai_address_contract”,
+  "type": "string",
+  "value": “<address-contract-staker-this-pair>”
+ },
+ {
+  "key": “usdnaxai_address_contract”,
+  "type": "string",
+  "value": “<address-contract-staker-this-pair>”
+ },
+ {
+  "key": “usdtaxai_address_contract”,
+  "type": "string",
+  "value": “<address-contract-staker-this-pair>”
+ },
+ {
+  "key": “waves_axai_swap”,
+  "type": "string",
+  "value": “<address_swap_contract>”
+ }
+]
