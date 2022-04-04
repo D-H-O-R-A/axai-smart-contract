@@ -9,6 +9,9 @@ func getAddressIfValid(address: String) = toString(valueOrErrorMessage(addressFr
 
 #value data account
 let main = "main_asset"
+let l = "lp_asset_"
+let a1 = "swap_asset1_"
+let a2 = "swap_asset2_"
 
 #Add new main Asset
 @Callable(i)
@@ -23,24 +26,24 @@ func addMainAsset(id: String) = {
 
 
 @Callable(i)
-func addPool(address: String, key: String) = {
-    let PMAA = getString(this, key)
+func addPool(address: String, pair: String, lp: String) = {
+    let PMAA = getString(this, address)
     if((i.caller == this))
       then if(isDefined(PMAA))
         then throw("The pool has been previously added.")
-        else [StringEntry(key,address)]
+        else [StringEntry(address,pair), StringEntry(l+pair, lp)]
     else throw("Only the Admin itself can invoke this function")
 }
 
-@Callable(i)
-func AddLpAsset(assetId: String, key: String) = {
-    let PMAA = getString(this, key)
-    if((i.caller == this))
-      then if(isDefined(PMAA))
-        then throw("The LP asset has been previously added.")
-        else [StringEntry(key,assetId)]
-    else throw("Only the Admin itself can invoke this function")
-}
+# @Callable(i)
+# func AddLpAsset(assetId: String, key: String) = {
+#     let PMAA = getString(this, key)
+#     if((i.caller == this))
+#       then if(isDefined(PMAA))
+#         then throw("The LP asset has been previously added.")
+#         else [StringEntry(key,assetId)]
+#     else throw("Only the Admin itself can invoke this function")
+# }
 
 @Callable(i)
 func activate(v: Boolean) = {
@@ -50,12 +53,12 @@ func activate(v: Boolean) = {
 }
 
 @Callable(i)
-func addSwap(address: String, key: String) = {
-    let PMAA = getString(this, key)
+func addSwap(address: String, asset1: String, asset2: String) = {
+    let PMAA = getString(this, address)
     if((i.caller == this))
       then if(isDefined(PMAA))
         then throw("The address for this swap has been previously added.")
-        else [StringEntry(key, address)]
+        else [StringEntry(a1 + address, asset1), StringEntry(a2 + address, asset2)]
     else throw("Only the Admin itself can invoke this function")
 }
 
