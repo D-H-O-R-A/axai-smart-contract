@@ -1,1 +1,66 @@
+{-# STDLIB_VERSION 5     #-}
+{-# SCRIPT_TYPE ACCOUNT  #-}
+{-# CONTENT_TYPE DAPP    #-}
 
+### keys ###
+
+#validate Address
+func getAddressIfValid(address: String) = toString(valueOrErrorMessage(addressFromString(address), (("Can't parse " + address) + " as address")))
+
+#value data account
+let main = "main_asset"
+
+#Add new main Asset
+@Callable(i)
+func addMainAsset(id: String) = {
+    let PMAA = getString(this, main)
+    if ((i.caller == this))
+      then if (isDefined(PMAA))
+        then throw("Main asset has been previously added.")
+        else [StringEntry(main, id)]
+    else throw("Only the Admin itself can invoke this function")
+}
+
+
+@Callable(i)
+func addPool(address: String, key: String) = {
+    let PMAA = getString(this, key)
+    if((i.caller == this))
+      then if(isDefined(PMAA))
+        then throw("The pool has been previously added.")
+        else [StringEntry(key,address)]
+    else throw("Only the Admin itself can invoke this function")
+}
+
+@Callable(i)
+func AddLpAsset(assetId: String, key: String) = {
+    let PMAA = getString(this, key)
+    if((i.caller == this))
+      then if(isDefined(PMAA))
+        then throw("The LP asset has been previously added.")
+        else [StringEntry(key,assetId)]
+    else throw("Only the Admin itself can invoke this function")
+}
+
+@Callable(i)
+func activate(v: Boolean) = {
+    if((i.caller == this))
+      then [BooleanEntry("activate", v)]
+    else throw("Only the Admin itself can invoke this function")
+}
+
+@Callable(i)
+func addSwap(address: String, key: String) = {
+    let PMAA = getString(this, key)
+    if((i.caller == this))
+      then if(isDefined(PMAA))
+        then throw("The address for this swap has been previously added.")
+        else [StringEntry(key, address)]
+    else throw("Only the Admin itself can invoke this function")
+}
+
+@Verifier(tx)
+func verify() = match tx {
+    case _ => 
+        sigVerify(tx.bodyBytes, tx.proofs[0], tx.senderPublicKey)
+}
