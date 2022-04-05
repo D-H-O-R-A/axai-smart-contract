@@ -11,6 +11,7 @@ func getAddressIfValid(address: String) = toString(valueOrErrorMessage(addressFr
 let main = "main_asset"
 let l = "lp_asset_"
 let a1 = "swap_asset1_"
+let st = "staker_swap_pool_"
 let a2 = "swap_asset2_"
 
 #Add new main Asset
@@ -26,12 +27,12 @@ func addMainAsset(id: String) = {
 
 
 @Callable(i)
-func addPool(address: String, pair: String, lp: String) = {
+func addPool(address: String, pair: String, lp: String, staker: String) = {
     let PMAA = getString(this, address)
     if((i.caller == this))
       then if(isDefined(PMAA))
         then throw("The pool has been previously added.")
-        else [StringEntry(address,pair), StringEntry(l+pair, lp)]
+        else [StringEntry(address,pair), StringEntry(l+pair, lp), StringEntry(st+address, staker)]
     else throw("Only the Admin itself can invoke this function")
 }
 
@@ -53,12 +54,12 @@ func activate(v: Boolean) = {
 }
 
 @Callable(i)
-func addSwap(address: String, asset1: String, asset2: String) = {
+func addSwap(address: String, asset1: String, asset2: String, staker: String) = {
     let PMAA = getString(this, address)
     if((i.caller == this))
       then if(isDefined(PMAA))
         then throw("The address for this swap has been previously added.")
-        else [StringEntry(a1 + address, asset1), StringEntry(a2 + address, asset2)]
+        else [StringEntry(a1 + address, asset1), StringEntry(a2 + address, asset2), StringEntry(st + address, staker)]
     else throw("Only the Admin itself can invoke this function")
 }
 
