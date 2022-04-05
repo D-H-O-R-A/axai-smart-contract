@@ -15,6 +15,8 @@ let st = "address_staker_"
 let sst = "address_pool_"
 let swp = "address_swap_"
 let a2 = "swap_asset2_"
+let aa1 = "pool_1_"
+let aa2 = "pool_2_"
 
 #Add new main Asset
 @Callable(i)
@@ -29,12 +31,12 @@ func addMainAsset(id: String) = {
 
 
 @Callable(i)
-func addPool(address: String, pair: String, lp: String, staker: String) = {
+func addPool(address: String, pair: String, lp: String, staker: String, asset1: String, asset2: String) = {
     let PMAA = getString(this, address)
     if((i.caller == this))
       then if(isDefined(PMAA))
         then throw("The pool has been previously added.")
-        else [StringEntry(address,pair), StringEntry(l+pair, lp), StringEntry(sst+address, staker),StringEntry(st+staker,address)]
+        else [StringEntry(address,pair), StringEntry(l+pair, lp), StringEntry(sst+address, staker),StringEntry(st+staker,address),StringEntry(aa1+address,asset1),StringEntry(aa2+address,asset2)]
     else throw("Only the Admin itself can invoke this function")
 }
 
