@@ -1,5 +1,3 @@
-#testnet address 3N19jxhEYkphA6vga9hXTPsU5YfRMR27YoE
-
 {-# STDLIB_VERSION 5     #-}
 {-# SCRIPT_TYPE ACCOUNT  #-}
 {-# CONTENT_TYPE DAPP    #-}
@@ -80,7 +78,7 @@ func removeSwapOrPool(address: String, SwapOrPool: Boolean) = {
       #if is pool
       else {
         let prai = getStringValue(sst+address)
-        let bbentry = [DeleteEntry(sst+address),DeleteEntry(l+prai), DeleteEntry(address), DeleteEntry(st+PMAA), DeleteEntry(aa1+address)]
+        let bbentry = [DeleteEntry(sst+address),DeleteEntry(l+prai), DeleteEntry(address), DeleteEntry(st+PMAA), DeleteEntry(aa1+address), DeleteEntry(aa2+address)]
         bbentry
       }
      else throw("The address for this 'supposed' swap/pool was not found!")
