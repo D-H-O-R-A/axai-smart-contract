@@ -1,4 +1,4 @@
-#testnet address for example 3N8HqrJvSK4nhZQTAJaJ1aoaFj2je1PnCUD (token_test + usdn)
+#testnet address for example 3N8HqrJvSK4nhZQTAJaJ1aoaFj2je1PnCUD (token_test / usdn)
 
 {-# STDLIB_VERSION 5     #-}
 {-# SCRIPT_TYPE ACCOUNT  #-}
