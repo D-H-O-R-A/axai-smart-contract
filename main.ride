@@ -17,6 +17,7 @@ let swp = "address_swap_"
 let a2 = "swap_asset2_"
 let aa1 = "pool_1_"
 let aa2 = "pool_2_"
+let st1 = "staker_address"
 
 #Add new main Asset
 @Callable(i)
@@ -29,14 +30,13 @@ func addMainAsset(id: String) = {
     else throw("Only the Admin itself can invoke this function")
 }
 
-
 @Callable(i)
 func addPool(address: String, pair: String, lp: String, staker: String, asset1: String, asset2: String) = {
     let PMAA = getString(this, address)
     if((i.caller == this))
       then if(isDefined(PMAA))
         then throw("The pool has been previously added.")
-        else [StringEntry(address,pair), StringEntry(l+pair, lp), StringEntry(sst+address, staker),StringEntry(st+staker,address),StringEntry(aa1+address,asset1),StringEntry(aa2+address,asset2)]
+        else [StringEntry(sst+address,pair), StringEntry(l+pair, lp), StringEntry(address, staker),StringEntry(st+staker,address),StringEntry(aa1+address,asset1),StringEntry(aa2+address,asset2)]
     else throw("Only the Admin itself can invoke this function")
 }
 
@@ -63,8 +63,26 @@ func addSwap(address: String, asset1: String, asset2: String, staker: String) = 
     if((i.caller == this))
       then if(isDefined(PMAA))
         then throw("The address for this swap has been previously added.")
-        else [StringEntry(a1 + address, asset1), StringEntry(a2 + address, asset2), StringEntry(swp + address, staker), StringEntry(st+staker,address)]
+        else [StringEntry(a1 + address, asset1), StringEntry(a2 + address, asset2), StringEntry(address, staker), StringEntry(st+staker,address)]
     else throw("Only the Admin itself can invoke this function")
+}
+
+@Callable(i)
+func removeSwapOrPool(address: String, SwapOrPool: Boolean) = {
+  let PMAA = getStringValue(this, address)
+  if((i.caller == this))
+    then if(isDefined(PMAA))
+     then if(SwapOrPool)
+      #if  is swap
+      then [DeleteEntry(a1+address),DeleteEntry(a2+address),DeleteEntry(address),DeleteEntry(st+PMAA)]
+      #if is pool
+      else {
+        let prai = getStringValue(sst+address)
+        let bbentry = [DeleteEntry(sst+address),DeleteEntry(l+prai), DeleteEntry(address), DeleteEntry(st+PMAA), DeleteEntry(aa1+address)]
+        bbentry
+      }
+     else throw("The address for this 'supposed' swap/pool was not found!")
+  else throw("Only the Admin itself can invoke this function")
 }
 
 @Verifier(tx)
