@@ -20,11 +20,8 @@ let type = "type_"
 #Add new main Asset
 @Callable(i)
 func addMainAsset(id: String) = {
-    let PMAA = getString(this, main)
     if ((i.caller == this))
-      then if (isDefined(PMAA))
-        then throw("Main asset has been previously added.")
-        else [StringEntry(main, id)]
+      then [StringEntry(main, id)]
     else throw("Only the Admin itself can invoke this function")
 }
 
