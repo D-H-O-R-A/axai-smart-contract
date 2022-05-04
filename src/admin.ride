@@ -40,7 +40,7 @@ func addPool(addres: String, pair: String, lp: String, stake: String, asset1: St
     if((i.caller == this))
       then if(isDefined(PMAA))
         then throw("The pool has been previously added.")
-        else [StringEntry(address, pair), StringEntry("POOL_" + pair, staker), StringEntry(address, "POOL_" + pair), StringEntry(l+pair, lp),StringEntry(aa1+address,asset1),StringEntry(aa2+address,asset2), StringEntry(type+address, "pools")]
+        else [StringEntry(address, pair), StringEntry("POOL_" + pair, staker), StringEntry(l+pair, lp),StringEntry(aa1+address,asset1),StringEntry(aa2+address,asset2), StringEntry(type+address, "pools")]
     else throw("Only the Admin itself can invoke this function")
 }
 
@@ -61,7 +61,7 @@ func addSwap(addres: String,stake: String, pair: String, asset1: String, asset2:
     if((i.caller == this))
       then if(isDefined(PMAA))
         then throw("The address for this swap has been previously added.")
-        else [StringEntry(pair, staker),StringEntry(address, pair), StringEntry(a1 + address, asset1), StringEntry(a2 + address, asset2), StringEntry(type+address, "swap")]
+        else [StringEntry("swap_"+pair, staker),StringEntry(address, pair), StringEntry(a1 + address, asset1), StringEntry(a2 + address, asset2), StringEntry(type+address, "swap")]
     else throw("Only the Admin itself can invoke this function")
 }
 
@@ -74,14 +74,12 @@ func removeSwapOrPool(address: String) = {
     then if(PAA == "swap")
       #if  is swap
       then 
-        let prai = getStringValue(address)
-        let deletEnty = [DeleteEntry(prai), DeleteEntry(address), DeleteEntry(type+address),DeleteEntry(a1+address),DeleteEntry(a2+address)]
+        let deletEnty = [DeleteEntry("swap_"+PMAA), DeleteEntry(address), DeleteEntry(type+address),DeleteEntry(a1+address),DeleteEntry(a2+address)]
         deletEnty
       
       #if is pool
     else {
-      let prai = getStringValue(address)
-      let bbentry = [DeleteEntry(address),DeleteEntry("POOL_" + prai),DeleteEntry(l+prai),DeleteEntry(aa1+address), DeleteEntry(aa2+address), DeleteEntry(type+address)]
+      let bbentry = [DeleteEntry(address),DeleteEntry("POOL_" + PMAA),DeleteEntry("lp_asset_"+PMAA),DeleteEntry(aa1+address), DeleteEntry(aa2+address), DeleteEntry(type+address)]
       bbentry
     }
   else throw("Only the Admin itself can invoke this function")
