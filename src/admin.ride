@@ -1,1 +1,94 @@
+#testnet address 3N19jxhEYkphA6vga9hXTPsU5YfRMR27YoE
 
+{-# STDLIB_VERSION 5     #-}
+{-# SCRIPT_TYPE ACCOUNT  #-}
+{-# CONTENT_TYPE DAPP    #-}
+
+### keys ###
+
+#validate Address
+func getAddressIfValid(address: String) = toString(valueOrErrorMessage(addressFromString(address), (("Can't parse " + address) + " as address")))
+
+#value data account
+let main = "main_asset"
+let l = "lp_asset_"
+let a1 = "swap_asset1_"
+let st = "address_staker_"
+let sst = "address_pool_"
+let swp = "address_swap_"
+let a2 = "swap_asset2_"
+let aa1 = "pool_1_"
+let aa2 = "pool_2_"
+let st1 = "staker_address"
+
+#Add new main Asset
+@Callable(i)
+func addMainAsset(id: String) = {
+    let PMAA = getString(this, main)
+    if ((i.caller == this))
+      then if (isDefined(PMAA))
+        then throw("Main asset has been previously added.")
+        else [StringEntry(main, id)]
+    else throw("Only the Admin itself can invoke this function")
+}
+
+@Callable(i)
+func addPool(address: String, pair: String, lp: String, staker: String, asset1: String, asset2: String) = {
+    let PMAA = getString(this, address)
+    if((i.caller == this))
+      then if(isDefined(PMAA))
+        then throw("The pool has been previously added.")
+        else [StringEntry(sst+address,pair), StringEntry(l+pair, lp), StringEntry(address, staker),StringEntry(st+staker,address),StringEntry(aa1+address,asset1),StringEntry(aa2+address,asset2)]
+    else throw("Only the Admin itself can invoke this function")
+}
+
+# @Callable(i)
+# func AddLpAsset(assetId: String, key: String) = {
+#     let PMAA = getString(this, key)
+#     if((i.caller == this))
+#       then if(isDefined(PMAA))
+#         then throw("The LP asset has been previously added.")
+#         else [StringEntry(key,assetId)]
+#     else throw("Only the Admin itself can invoke this function")
+# }
+
+@Callable(i)
+func activate(v: Boolean) = {
+    if((i.caller == this))
+      then [BooleanEntry("activate", v)]
+    else throw("Only the Admin itself can invoke this function")
+}
+
+@Callable(i)
+func addSwap(address: String, asset1: String, asset2: String, staker: String) = {
+    let PMAA = getString(this, address)
+    if((i.caller == this))
+      then if(isDefined(PMAA))
+        then throw("The address for this swap has been previously added.")
+        else [StringEntry(a1 + address, asset1), StringEntry(a2 + address, asset2), StringEntry(address, staker), StringEntry(st+staker,address)]
+    else throw("Only the Admin itself can invoke this function")
+}
+
+@Callable(i)
+func removeSwapOrPool(address: String, SwapOrPool: Boolean) = {
+  let PMAA = getStringValue(this, address)
+  if((i.caller == this))
+    then if(isDefined(PMAA))
+     then if(SwapOrPool)
+      #if  is swap
+      then [DeleteEntry(a1+address),DeleteEntry(a2+address),DeleteEntry(address),DeleteEntry(st+PMAA)]
+      #if is pool
+      else {
+        let prai = getStringValue(sst+address)
+        let bbentry = [DeleteEntry(sst+address),DeleteEntry(l+prai), DeleteEntry(address), DeleteEntry(st+PMAA), DeleteEntry(aa1+address), DeleteEntry(aa2+address)]
+        bbentry
+      }
+     else throw("The address for this 'supposed' swap/pool was not found!")
+  else throw("Only the Admin itself can invoke this function")
+}
+
+@Verifier(tx)
+func verify() = match tx {
+    case _ => 
+        sigVerify(tx.bodyBytes, tx.proofs[0], tx.senderPublicKey)
+}
