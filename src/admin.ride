@@ -67,9 +67,10 @@ func addSwap(address: String, pair: String, asset1: String, asset2: String, stak
 
 @Callable(i)
 func removeSwapOrPool(address: String) = {
-  let PMAA = getStringValue(this, type+address)
+  let PAA = getStringValue(this, type+address)
+  let PMAA = getStringValue(this, address)
   if((i.caller == this))
-    then if(PMAA == "swap")
+    then if(PAA == "swap")
       #if  is swap
       then [DeleteEntry(a1+address),DeleteEntry(a2+address),DeleteEntry(address),DeleteEntry(st+PMAA)]
       #if is pool
