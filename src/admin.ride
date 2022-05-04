@@ -16,6 +16,11 @@ let aa1 = "pool_1_"
 let aa2 = "pool_2_"
 let st1 = "staker_address"
 let type = "type_"
+let leasePool = Address(this.bytes)
+let sa = "STAKING_AMOUNT_"
+let la = "LEASE_AMOUNT_"
+let ix = "ID_"
+let exchangeRate = 5
 
 #Add new main Asset
 @Callable(i)
@@ -25,26 +30,18 @@ func addMainAsset(id: String) = {
     else throw("Only the Admin itself can invoke this function")
 }
 
+#add new pool
 @Callable(i)
 func addPool(address: String, pair: String, lp: String, staker: String, asset1: String, asset2: String) = {
     let PMAA = getString(this, address)
     if((i.caller == this))
       then if(isDefined(PMAA))
         then throw("The pool has been previously added.")
-        else [StringEntry(sst+address,pair), StringEntry(l+pair, lp), StringEntry(address, staker),StringEntry(st+staker,address),StringEntry(aa1+address,asset1),StringEntry(aa2+address,asset2), StringEntry(type+address, "pools")]
+        else [StringEntry("POOL_" + pair, address), StringEntry(address, "POOL_" + pair), StringEntry(l+pair, lp),StringEntry(aa1+address,asset1),StringEntry(aa2+address,asset2), StringEntry(type+address, "pools")]
     else throw("Only the Admin itself can invoke this function")
 }
 
-# @Callable(i)
-# func AddLpAsset(assetId: String, key: String) = {
-#     let PMAA = getString(this, key)
-#     if((i.caller == this))
-#       then if(isDefined(PMAA))
-#         then throw("The LP asset has been previously added.")
-#         else [StringEntry(key,assetId)]
-#     else throw("Only the Admin itself can invoke this function")
-# }
-
+#power on/off dApp
 @Callable(i)
 func activate(v: Boolean) = {
     if((i.caller == this))
@@ -52,16 +49,18 @@ func activate(v: Boolean) = {
     else throw("Only the Admin itself can invoke this function")
 }
 
+#add new swap
 @Callable(i)
-func addSwap(address: String, pair: String, asset1: String, asset2: String, staker: String) = {
+func addSwap(address: String, pair: String, asset1: String, asset2: String) = {
     let PMAA = getString(this, address)
     if((i.caller == this))
       then if(isDefined(PMAA))
         then throw("The address for this swap has been previously added.")
-        else [StringEntry(a1 + address, asset1), StringEntry(a2 + address, asset2), StringEntry(address, staker), StringEntry(st+staker,address), StringEntry(type+address, "swap")]
+        else [StringEntry(pair, address),StringEntry(address, pair), StringEntry(a1 + address, asset1), StringEntry(a2 + address, asset2), StringEntry(type+address, "swap")]
     else throw("Only the Admin itself can invoke this function")
 }
 
+#remove swap or pool
 @Callable(i)
 func removeSwapOrPool(address: String) = {
   let PAA = getStringValue(this, type+address)
@@ -69,11 +68,15 @@ func removeSwapOrPool(address: String) = {
   if((i.caller == this))
     then if(PAA == "swap")
       #if  is swap
-      then [DeleteEntry(type+address),DeleteEntry(a1+address),DeleteEntry(a2+address),DeleteEntry(address),DeleteEntry(st+PMAA)]
+      then 
+        let prai = getStringValue(address)
+        let deletEnty = [DeleteEntry(prai), DeleteEntry(address), DeleteEntry(type+address),DeleteEntry(a1+address),DeleteEntry(a2+address)]
+        deletEnty
+      
       #if is pool
     else {
-      let prai = getStringValue(sst+address)
-      let bbentry = [DeleteEntry(type+address),DeleteEntry(sst+address),DeleteEntry(l+prai), DeleteEntry(address), DeleteEntry(st+PMAA), DeleteEntry(aa1+address), DeleteEntry(aa2+address)]
+      let prai = getStringValue(address)
+      let bbentry = [DeleteEntry(address),DeleteEntry("POOL_" + prai),DeleteEntry(l+prai),DeleteEntry(aa1+address), DeleteEntry(aa2+address), DeleteEntry(type+address)]
       bbentry
     }
   else throw("Only the Admin itself can invoke this function")
