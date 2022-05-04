@@ -21,6 +21,7 @@ let sa = "STAKING_AMOUNT_"
 let la = "LEASE_AMOUNT_"
 let ix = "ID_"
 let exchangeRate = 5
+func getAddressIfValid(address: String) = toString(valueOrErrorMessage(addressFromString(address), "Can't parse " + address + " as address"))
 
 #Add new main Asset
 @Callable(i)
@@ -32,12 +33,14 @@ func addMainAsset(id: String) = {
 
 #add new pool
 @Callable(i)
-func addPool(address: String, pair: String, lp: String, staker: String, asset1: String, asset2: String) = {
+func addPool(addres: String, pair: String, lp: String, stake: String, asset1: String, asset2: String) = {
+    let address = getAddressIfValid(addres)
+    let staker = getAddressIfValid(stake)
     let PMAA = getString(this, address)
     if((i.caller == this))
       then if(isDefined(PMAA))
         then throw("The pool has been previously added.")
-        else [StringEntry("POOL_" + pair, address), StringEntry(address, "POOL_" + pair), StringEntry(l+pair, lp),StringEntry(aa1+address,asset1),StringEntry(aa2+address,asset2), StringEntry(type+address, "pools")]
+        else [StringEntry(address, pair), StringEntry("POOL_" + pair, staker), StringEntry(address, "POOL_" + pair), StringEntry(l+pair, lp),StringEntry(aa1+address,asset1),StringEntry(aa2+address,asset2), StringEntry(type+address, "pools")]
     else throw("Only the Admin itself can invoke this function")
 }
 
@@ -51,12 +54,14 @@ func activate(v: Boolean) = {
 
 #add new swap
 @Callable(i)
-func addSwap(address: String, pair: String, asset1: String, asset2: String) = {
+func addSwap(addres: String,stake: String, pair: String, asset1: String, asset2: String) = {
+    let address = getAddressIfValid(addres)
+    let staker = getAddressIfValid(stake)
     let PMAA = getString(this, address)
     if((i.caller == this))
       then if(isDefined(PMAA))
         then throw("The address for this swap has been previously added.")
-        else [StringEntry(pair, address),StringEntry(address, pair), StringEntry(a1 + address, asset1), StringEntry(a2 + address, asset2), StringEntry(type+address, "swap")]
+        else [StringEntry(pair, staker),StringEntry(address, pair), StringEntry(a1 + address, asset1), StringEntry(a2 + address, asset2), StringEntry(type+address, "swap")]
     else throw("Only the Admin itself can invoke this function")
 }
 
