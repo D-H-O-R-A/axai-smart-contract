@@ -1,3 +1,5 @@
+#address in testnet 3N19jxhEYkphA6vga9hXTPsU5YfRMR27YoE
+
 {-# STDLIB_VERSION 5     #-}
 {-# SCRIPT_TYPE ACCOUNT  #-}
 {-# CONTENT_TYPE DAPP    #-}
@@ -40,7 +42,9 @@ func addPool(addres: String, pair: String, lp: String, stake: String, asset1: St
     if((i.caller == this))
       then if(isDefined(PMAA))
         then throw("The pool has been previously added.")
-        else [StringEntry(address, pair), StringEntry("POOL_" + pair, staker), StringEntry(l+pair, lp),StringEntry(aa1+address,asset1),StringEntry(aa2+address,asset2), StringEntry(type+address, "pools")]
+        else if(addres == staker)
+          then throw("Pool address cannot be the same as staker")
+          else [StringEntry(address, pair), StringEntry("POOL_" + pair, staker), StringEntry(l+pair, lp),StringEntry(aa1+address,asset1),StringEntry(aa2+address,asset2), StringEntry(type+address, "pools")]
     else throw("Only the Admin itself can invoke this function")
 }
 
@@ -61,7 +65,9 @@ func addSwap(addres: String,stake: String, pair: String, asset1: String, asset2:
     if((i.caller == this))
       then if(isDefined(PMAA))
         then throw("The address for this swap has been previously added.")
-        else [StringEntry("swap_"+pair, staker),StringEntry(address, pair), StringEntry(a1 + address, asset1), StringEntry(a2 + address, asset2), StringEntry(type+address, "swap")]
+        else if(addres == staker)
+          then throw("Swap address cannot be the same as staker")
+          else [StringEntry("swap_"+pair, staker),StringEntry(address, pair), StringEntry(a1 + address, asset1), StringEntry(a2 + address, asset2), StringEntry(type+address, "swap")]
     else throw("Only the Admin itself can invoke this function")
 }
 
