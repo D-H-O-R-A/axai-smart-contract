@@ -72,11 +72,11 @@ func removeSwapOrPool(address: String) = {
   if((i.caller == this))
     then if(PAA == "swap")
       #if  is swap
-      then [DeleteEntry(a1+address),DeleteEntry(a2+address),DeleteEntry(address),DeleteEntry(st+PMAA)]
+      then [DeleteEntry(type+address),DeleteEntry(a1+address),DeleteEntry(a2+address),DeleteEntry(address),DeleteEntry(st+PMAA)]
       #if is pool
     else {
       let prai = getStringValue(sst+address)
-      let bbentry = [DeleteEntry(sst+address),DeleteEntry(l+prai), DeleteEntry(address), DeleteEntry(st+PMAA), DeleteEntry(aa1+address), DeleteEntry(aa2+address)]
+      let bbentry = [DeleteEntry(type+address),DeleteEntry(sst+address),DeleteEntry(l+prai), DeleteEntry(address), DeleteEntry(st+PMAA), DeleteEntry(aa1+address), DeleteEntry(aa2+address)]
       bbentry
     }
   else throw("Only the Admin itself can invoke this function")
