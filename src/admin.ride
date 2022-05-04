@@ -1,5 +1,3 @@
-#address in testnet 3N19jxhEYkphA6vga9hXTPsU5YfRMR27YoE
-
 {-# STDLIB_VERSION 5     #-}
 {-# SCRIPT_TYPE ACCOUNT  #-}
 {-# CONTENT_TYPE DAPP    #-}
@@ -24,6 +22,7 @@ let la = "LEASE_AMOUNT_"
 let ix = "ID_"
 let exchangeRate = 5
 func getAddressIfValid(address: String) = toString(valueOrErrorMessage(addressFromString(address), "Can't parse " + address + " as address"))
+func getAssetIfValid(assetId: String) = toBase58String(valueOrErrorMessage(assetInfo(fromBase58String(assetId)).value().id, "Asset Id: " + assetId +  " is invalid."))
 
 #Add new main Asset
 @Callable(i)
@@ -35,16 +34,21 @@ func addMainAsset(id: String) = {
 
 #add new pool
 @Callable(i)
-func addPool(addres: String, pair: String, lp: String, stake: String, asset1: String, asset2: String) = {
+func addPool(addres: String, pair: String, llp: String, stake: String, asset11: String, asset22: String) = {
     let address = getAddressIfValid(addres)
     let staker = getAddressIfValid(stake)
+    let lp = getAssetIfValid(llp)
+    let asset1 = getAssetIfValid(asset11)
+    let asset2 = getAssetIfValid(asset22)
     let PMAA = getString(this, address)
     if((i.caller == this))
       then if(isDefined(PMAA))
         then throw("The pool has been previously added.")
         else if(addres == staker)
           then throw("Pool address cannot be the same as staker")
-          else [StringEntry(address, pair), StringEntry("POOL_" + pair, staker), StringEntry(l+pair, lp),StringEntry(aa1+address,asset1),StringEntry(aa2+address,asset2), StringEntry(type+address, "pools")]
+          else if(asset1 == asset2)
+            then throw("Asset1 cannot be equal to Asset2 and vice versa")
+            else [StringEntry(address, pair), StringEntry("POOL_" + pair, staker), StringEntry(l+pair, lp),StringEntry(aa1+address,asset1),StringEntry(aa2+address,asset2), StringEntry(type+address, "pools")]
     else throw("Only the Admin itself can invoke this function")
 }
 
@@ -58,16 +62,20 @@ func activate(v: Boolean) = {
 
 #add new swap
 @Callable(i)
-func addSwap(addres: String,stake: String, pair: String, asset1: String, asset2: String) = {
+func addSwap(addres: String,stake: String, pair: String, asset11: String, asset22: String) = {
     let address = getAddressIfValid(addres)
     let staker = getAddressIfValid(stake)
     let PMAA = getString(this, address)
+    let asset1 = getAssetIfValid(asset11)
+    let asset2 = getAssetIfValid(asset22)
     if((i.caller == this))
       then if(isDefined(PMAA))
         then throw("The address for this swap has been previously added.")
         else if(addres == staker)
           then throw("Swap address cannot be the same as staker")
-          else [StringEntry("swap_"+pair, staker),StringEntry(address, pair), StringEntry(a1 + address, asset1), StringEntry(a2 + address, asset2), StringEntry(type+address, "swap")]
+          else if(asset1 == asset2)
+            then throw("Asset1 cannot be equal to Asset2 and vice versa")
+            else [StringEntry("swap_"+pair, staker),StringEntry(address, pair), StringEntry(a1 + address, asset1), StringEntry(a2 + address, asset2), StringEntry(type+address, "swap")]
     else throw("Only the Admin itself can invoke this function")
 }
 
