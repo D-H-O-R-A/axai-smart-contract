@@ -113,7 +113,7 @@ func constructor(MainAssetId: String, UsdnAssetId: String, UsdtAssetId:String, U
       StringEntry(usdt, UsdtAssetId), 
       StringEntry(ngnn, NgnnAssetId), 
       # BooleanEntry(aWaves, acceptWaves), 
-      IntegerEntry(rateFee, percentageRateSwap * D8),
+      IntegerEntry(rateFee, percentageRateSwap),
       BooleanEntry(ac, true), 
       BooleanEntry(swapAc, false), 
       BooleanEntry(poolAc, false), 
