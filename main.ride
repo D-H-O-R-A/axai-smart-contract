@@ -194,12 +194,12 @@ func addAdmin(address: String) = {
 
 #create lp asset for initial config
 @Callable(i)
-func lpAssetCreateForPairPool(asset1: String, asset2: String) = {
+func lpAssetCreateForPairPool(asset1: String, asset2: String, name: String) = {
   let key = validPoolK(kp(asset1, asset2))
   if((i.caller == this || i.caller == adminVerification()))
    then if(!(key == 0))
     then {
-      let assetLpCreate = Issue("LP_" + asset1+"_"+asset2, "LP asset for pool liquidity in AxAi Swap pair " + asset1 + "_"+ asset2, 1,8,true)
+      let assetLpCreate = Issue("LP_" + name, "LP asset for pool liquidity in AxAi Swap pair " + asset1 + "_"+ asset2, 1,8,true)
       let idAssetLp = calculateAssetId(assetLpCreate)
       [
        StringEntry(l+kp(asset1, asset2), toBase58String(idAssetLp))
