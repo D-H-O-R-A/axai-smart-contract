@@ -202,7 +202,8 @@ func lpAssetCreateForPairPool(asset1: String, asset2: String, name: String) = {
       let assetLpCreate = Issue("LP_" + name, "LP asset for pool liquidity in AxAi Swap pair " + asset1 + "_"+ asset2, 1,8,true)
       let idAssetLp = calculateAssetId(assetLpCreate)
       [
-       StringEntry(l+kp(asset1, asset2), toBase58String(idAssetLp))
+       StringEntry(l+kp(asset1, asset2), toBase58String(idAssetLp)),
+       assetLpCreate
       ]
     }
     else throw("Invalid Pool Key. Try inverting the assets")
