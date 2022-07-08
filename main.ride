@@ -160,7 +160,7 @@ func maintenance(pools: Boolean, swap: Boolean, stake: Boolean) = {
 @Callable(i)
 func percentualRateFeeSwapEdit(rate: Int) = {
   if((i.caller == this || i.caller == adminVerification()))
-   then [IntegerEntry(rateFee, rate * D8)]
+   then [IntegerEntry(rateFee, rate)]
   else throw("Only the Admin itself can invoke this function")
 }
 
