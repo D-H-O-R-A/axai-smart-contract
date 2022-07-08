@@ -70,10 +70,17 @@ func pkey(Asset1: String,Asset2: String, address: String) = (deposit_height + kp
 #return the value for asset lp blocked in stake
 func lpBlocked(address: String, key: String) = valueOrElse(getIntegerValue(this, "STAKE_LP_" +address + "_"+key), 0)
 
+#admin verification
+func adminVerification() = match (getStringValue(this, "admin")) {
+    case t: String => Address(fromBase58String(t))
+    case _ => this
+} 
+
 #### Constructor for start smart contract ####
 @Callable(i)
-func constructor(MainAssetId: String, UsdnAssetId: String, UsdtAssetId:String, UsdcAssetId: String, NgnnAssetId: String, acceptWaves: Boolean, percentageRateSwap: Int, blockDistribution: Int) = {
-    if ((i.caller == this))
+# func constructor(MainAssetId: String, UsdnAssetId: String, UsdtAssetId:String, UsdcAssetId: String, NgnnAssetId: String, acceptWaves: Boolean, percentageRateSwap: Int, blockDistribution: Int) = {
+func constructor(MainAssetId: String, UsdnAssetId: String, UsdtAssetId:String, UsdcAssetId: String, NgnnAssetId: String, percentageRateSwap: Int, blockDistribution: Int) = {
+    if ((i.caller == this || i.caller == adminVerification()))
       then {
         #usdn - all assets
         let keyPoolUsdnUsdt = kp(UsdnAssetId, UsdtAssetId)
@@ -105,7 +112,7 @@ func constructor(MainAssetId: String, UsdnAssetId: String, UsdtAssetId:String, U
       StringEntry(usdc, UsdcAssetId), 
       StringEntry(usdt, UsdtAssetId), 
       StringEntry(ngnn, NgnnAssetId), 
-      BooleanEntry(aWaves, acceptWaves), 
+      # BooleanEntry(aWaves, acceptWaves), 
       IntegerEntry(rateFee, percentageRateSwap * D8),
       BooleanEntry(ac, true), 
       BooleanEntry(swapAc, false), 
@@ -136,7 +143,7 @@ func constructor(MainAssetId: String, UsdnAssetId: String, UsdtAssetId:String, U
 #power on/off dApp
 @Callable(i)
 func activate(v: Boolean) = {
-    if((i.caller == this))
+    if((i.caller == this || i.caller == adminVerification()))
       then [BooleanEntry(ac, v)]
     else throw("Only the Admin itself can invoke this function")
 }
@@ -144,7 +151,7 @@ func activate(v: Boolean) = {
 #activate and desactivate pools/swap/liquidity
 @Callable(i)
 func maintenance(pools: Boolean, swap: Boolean, stake: Boolean) = {
-  if((i.caller == this))
+  if((i.caller == this || i.caller == adminVerification()))
    then [BooleanEntry(poolAc, pools), BooleanEntry(swapAc, swap), BooleanEntry(liquidityAc, stake)]
   else throw("Only the Admin itself can invoke this function")
 }
@@ -152,7 +159,7 @@ func maintenance(pools: Boolean, swap: Boolean, stake: Boolean) = {
 #edit percentual rate for fees swap
 @Callable(i)
 func percentualRateFeeSwapEdit(rate: Int) = {
-  if((i.caller == this))
+  if((i.caller == this || i.caller == adminVerification()))
    then [IntegerEntry(rateFee, rate * D8)]
   else throw("Only the Admin itself can invoke this function")
 }
@@ -160,7 +167,7 @@ func percentualRateFeeSwapEdit(rate: Int) = {
 #edit accept Waves
 # @Callable(i)
 # func acceptWaves(activate: Boolean) = {
-#   if((i.caller == this))
+#   if((i.caller == this || i.caller == adminVerification()))
 #    then [BooleanEntry(aWaves, activate)]
 #   else throw("Only the Admin itself can invoke this function")
 # }
@@ -168,7 +175,7 @@ func percentualRateFeeSwapEdit(rate: Int) = {
 #edit block distribution
 @Callable(i)
 func blockDistribution(newValue: Int) = {
-  if((i.caller == this))
+  if((i.caller == this || i.caller == adminVerification()))
    then [IntegerEntry(bcD, newValue)]
   else throw("Only the Admin itself can invoke this function")
 }
@@ -176,7 +183,7 @@ func blockDistribution(newValue: Int) = {
 #add admin for smart contract
 @Callable(i)
 func addAdmin(address: String) = {
-  if((i.caller == this))
+  if((i.caller == this || i.caller == adminVerification()))
    then{
      [
       StringEntry("admin", address)
@@ -189,7 +196,7 @@ func addAdmin(address: String) = {
 @Callable(i)
 func lpAssetCreateForPairPool(asset1: String, asset2: String) = {
   let key = validPoolK(kp(asset1, asset2))
-  if((i.caller == this))
+  if((i.caller == this || i.caller == adminVerification()))
    then if(!(key == 0))
     then {
       let assetLpCreate = Issue("LP_" + asset1+"_"+asset2, "LP asset for pool liquidity in AxAi Swap pair " + asset1 + "_"+ asset2, 1,8,true)
@@ -211,7 +218,7 @@ func deposit(pool: Boolean, Asset1: String, Asset2: String) = {
   #main validations
   let power = getBooleanValue(this, ac)
   let liquidityPower = getBooleanValue(this, liquidityAc)
-  let acWaves = getBooleanValue(this, aWaves)
+  # let acWaves = getBooleanValue(this, aWaves)
 
   #payment 
   # let USDN = toBytes(getStringValue(this, usdn))
@@ -279,7 +286,7 @@ func remove(pool: Boolean, Asset1: String, Asset2: String,amount: Int) = {
   #main validations
   let power = getBooleanValue(this, ac)
   let liquidityPower = getBooleanValue(this, liquidityAc)
-  let acWaves = getBooleanValue(this, aWaves)
+  # let acWaves = getBooleanValue(this, aWaves)
 
   #payment 
   let pmt =i.payments[0]
