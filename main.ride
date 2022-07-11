@@ -559,8 +559,10 @@ func swap(Asset1: String, Asset2: String) = {
   let totalAsset2 = totalAssetPool(kp(Asset1, Asset2)+"_"+Asset2,false)
   let feeRatePercentual = getIntegerValue(this, rateFee)
 
-  let priceAsset1 = toInt((toBigInt(i.payments[0].amount)*fraction(toBigInt(D8), toBigInt(totalAsset2), toBigInt(totalAsset1)))/toBigInt(D8))
-  let priceAsset2 = toInt((toBigInt(i.payments[0].amount)*fraction(toBigInt(D8), toBigInt(totalAsset1), toBigInt(totalAsset2)))/toBigInt(D8))
+  let prAsset1 = (toBigInt(i.payments[0].amount)*fraction(toBigInt(D8), toBigInt(totalAsset2), toBigInt(totalAsset1)))
+  let priceAsset1 = toInt((prAsset1 - (prAsset1/toBigInt(feeRatePercentual))*toBigInt(100))/toBigInt(D8))
+  let prAsset2 = (toBigInt(i.payments[0].amount)*fraction(toBigInt(D8), toBigInt(totalAsset1), toBigInt(totalAsset2)))
+  let priceAsset2 = toInt((prAsset2 - (prAsset2/toBigInt(feeRatePercentual))*toBigInt(100))/toBigInt(D8))
   let sendValue = if(asset1 == unit && Asset1 == waves) then priceAsset1 else {if(asset1 == fromBase58String(Asset1)) then priceAsset1 else priceAsset2}
   let assetUpdatePay = if(asset1 == unit) then waves else {if(asset1 == fromBase58String(Asset1)) then Asset1 else Asset2}
   let assetUpdateSwap = if(asset1 == unit) then waves else {if(asset1 == fromBase58String(Asset1)) then Asset2 else Asset1}
