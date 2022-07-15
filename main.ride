@@ -111,8 +111,9 @@ func totalAssetPool(key:String, assetLp: Boolean) = match getInteger(this, key){
 @Callable(i)
 # func constructor(MainAssetId: String, UsdnAssetId: String, UsdtAssetId:String, UsdcAssetId: String, NgnnAssetId: String, acceptWaves: Boolean, percentageRateSwap: Int, blockDistribution: Int) = {
 func constructor(MainAssetId: String, UsdnAssetId: String, UsdtAssetId:String, UsdcAssetId: String, NgnnAssetId: String, EurnAssetId: String, percentageRateSwap: Int, blockDistribution: Int, acceptWaves: Boolean) = {
+    let keyPoolUsdtWaves = kp(UsdtAssetId, waves)
     if ((i.caller == this || i.caller == adminVerification()))
-      then if(valueOrElse(getInteger(this, "keyPoolUsdtWaves"), 0) == 0)
+      then if(valueOrElse(getInteger(this, keyPoolUsdtWaves), 0) == 0)
        then{
         #usdn - all assets
         let keyPoolUsdnUsdt = kp(UsdnAssetId, UsdtAssetId)
@@ -131,7 +132,6 @@ func constructor(MainAssetId: String, UsdnAssetId: String, UsdtAssetId:String, U
 
         #usdt - all assets
         let keyPoolUsdtNgnn = kp(UsdtAssetId, NgnnAssetId)
-        let keyPoolUsdtWaves = kp(UsdtAssetId, waves)
         let keyPoolUsdtMainAsset = kp(UsdtAssetId, MainAssetId)
         let keyPoolUsdtEurn = kp(UsdtAssetId, EurnAssetId)
 
