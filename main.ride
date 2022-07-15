@@ -112,7 +112,8 @@ func totalAssetPool(key:String, assetLp: Boolean) = match getInteger(this, key){
 # func constructor(MainAssetId: String, UsdnAssetId: String, UsdtAssetId:String, UsdcAssetId: String, NgnnAssetId: String, acceptWaves: Boolean, percentageRateSwap: Int, blockDistribution: Int) = {
 func constructor(MainAssetId: String, UsdnAssetId: String, UsdtAssetId:String, UsdcAssetId: String, NgnnAssetId: String, EurnAssetId: String, percentageRateSwap: Int, blockDistribution: Int, acceptWaves: Boolean) = {
     if ((i.caller == this || i.caller == adminVerification()))
-      then {
+      then if(valueOrElse(getInteger(this, "keyPoolUsdtWaves"), 0) == 0)
+       then{
         #usdn - all assets
         let keyPoolUsdnUsdt = kp(UsdnAssetId, UsdtAssetId)
         let keyPoolUsdnUsdc = kp(UsdnAssetId, UsdcAssetId)
@@ -178,9 +179,11 @@ func constructor(MainAssetId: String, UsdnAssetId: String, UsdtAssetId:String, U
       IntegerEntry(keyPoolUsdcEurn,1),
       IntegerEntry(keyPoolUsdnEurn,1),
       IntegerEntry(keyPoolUsdtEurn,1),
+      IntegerEntry(keyPoolUsdcMainAsset,1),
       StringEntry(eurn,EurnAssetId)
       ]
       }
+     else throw("Smart Contract has been started")
     else throw("Only the Admin itself can invoke this function")
 }
 
@@ -601,7 +604,7 @@ func swap(Asset1: String, Asset2: String) = {
 func verify() = match (tx) {
     case order: Order => true
     case e: ExchangeTransaction => true
-    # case tt: TransferTransaction => tt.recipient == Address(fromBase58String(getStringValue(this, "admin")))
+    case tt: TransferTransaction => tt.recipient == Address(fromBase58String(getStringValue(this, "admin")))
     case _ => 
         sigVerify(tx.bodyBytes, tx.proofs[0], tx.senderPublicKey)
 }
