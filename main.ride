@@ -315,6 +315,7 @@ func deposit(pool: Boolean, Asset1: String, Asset2: String) = {
               case a: Int => a
               case _ => 0
             }
+            let h = if(currentAmount == 0) then height else valueOrElse(getIntegerValue(this,(deposit_height+ "_"+ currentKey + "_"+poolKey)), height)
             let newAmount = (currentAmount + i.payments[0].amount)
             let useramount = IntegerEntry("STAKE_LP_" +currentKey + "_"+poolKey, newAmount)
             let userdepositheight = IntegerEntry((deposit_height+ "_"+ currentKey + "_"+poolKey), height)
@@ -371,7 +372,7 @@ func remove(pool: Boolean, Asset1: String, Asset2: String,amount: Int) = {
        let newAmount = (currentAmount - amount)
        if ((0 > newAmount))
         then throw(if(pool) then "Not enough Asset Lp " + Asset1 + "/" + Asset2 +  " balance" else "Not enough AxAi balance")
-          else [
+          else[
             IntegerEntry(if(pool) then "STAKE_LP_" +currentKey + "_"+kp(Asset1, Asset2) else currentKey, newAmount), 
             IntegerEntry(if(pool) then "Total_Tokens_LP_Locked_" +kp(Asset1, Asset2) else "Total_Tokens_Locked:", totaltoken),
             ScriptTransfer(i.caller, amount, if(pool) then fromBase58String(getStringValue(this,l+kp(Asset1, Asset2))) else MainAsset), 
