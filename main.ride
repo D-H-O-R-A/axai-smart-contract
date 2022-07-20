@@ -99,12 +99,21 @@ func adminVerification() = match (getString(this, "admin")) {
 } 
 
 #validate asset1 and asset2
-func validateAsset(assetS: ByteVector|Unit, stringAsset: String,acWaves: Boolean) = if(assetS == WAVES && stringAsset == "WAVES") then if(acWaves) then true else throw("The smart contract does not currently support Waves.") else if(assetS == fromBase58String(stringAsset)) then true else false
+func validateAsset(assetS: ByteVector|Unit, stringAsset: String,acWaves: Boolean) = if(assetS == WAVES && stringAsset == waves) then if(acWaves) then true else throw("The smart contract does not currently support Waves.") else if(assetS == fromBase58String(stringAsset)) then true else false
 
 #return the total asset blocked in pool
 func totalAssetPool(key:String, assetLp: Boolean) = match getInteger(this, key){
   case a: Int => a
   case _ => if(assetLp) then 1*D8 else 1
+}
+
+#return the asset id for pay in swap
+func valid(assetPay: ByteVector|Unit, pair1: String, pair2: String) = {
+  let pair1_58 = if(pair1 == waves) then WAVES else fromBase58String(pair1)
+  let pair2_58 = if(pair2 == waves) then WAVES else fromBase58String(pair2)
+  if(assetPay == pair1_58)
+   then pair2_58
+  else pair1_58
 }
 
 #### Constructor for start smart contract ####
@@ -412,7 +421,9 @@ func addLiquidity(Asset1:String, Asset2: String) = {
   let totalLp = totalAssetPool(lpAssetId,true)
   let priceLpAsset = (totalAsset1Pool+totalAsset2Pool)/totalLp
   let quantityAsset2 = i.payments[0].amount*((totalAsset2Pool)/totalAsset1Pool)
-  let Validate = if(i.payments[1].amount == quantityAsset2) then true else false
+  let rateTop = i.payments[1].amount + (i.payments[1].amount*2/100) #rate top 2%
+  let rateBottom = i.payments[1].amount - (i.payments[1].amount*2/100) #rate top 2%
+  let Validate = if(i.payments[1].amount == quantityAsset2 || i.payments[1].amount<rateTop || i.payments[1].amount>rateBottom) then true else false
 
   #validation and more
   if((power)) #if the smart contract is activate - ok
@@ -429,7 +440,7 @@ func addLiquidity(Asset1:String, Asset2: String) = {
         let currentAmountAsset2 = poolAA(currentKey, kp(Asset1, Asset2), Asset2) #get amount locked by address for the asset2 if the lp token is not locked - ok
         let asset1pool = assetP(kp(Asset1, Asset2), Asset1) #get the total amount locked in smart contract for asset1 - ok
         let asset2pool = assetP(kp(Asset1, Asset2), Asset2) #get the total amount locked in smart contract for asset2 - ok
-        let receiveLp = if(totalAsset1Pool == i.payments[0].amount) then 1*D8 else (i.payments[0].amount+i.payments[1].amount)/((totalAsset1Pool+totalAsset2Pool)/totalLp) #get total asset lp which should be passed on based on the total pooled value of both assets - ok
+        let receiveLp = if(totalAsset1Pool == i.payments[0].amount) then 1*D8 else toInt(((toBigInt(i.payments[0].amount)*toBigInt(D8)+toBigInt(i.payments[1].amount)*toBigInt(D8))/((toBigInt(totalAsset1Pool)*toBigInt(D8)+toBigInt(totalAsset2Pool)*toBigInt(D8))/(toBigInt(totalLp))))) #get total asset lp which should be passed on based on the total pooled value of both assets - ok
         #new values based on old values
         let newcurrentAmountAsset1 = currentAmountAsset1 + i.payments[0].amount #updates the total of values ​​blocked by the address in the pool for asset1
         let newcurrentAmountAsset2 = currentAmountAsset2 + i.payments[1].amount #updates the total of values ​​blocked by the address in the pool for asset2
@@ -494,8 +505,8 @@ func removeLiquidity(Asset1: String, Asset2: String, Amount: Int) = {
         then if((currentAmount-amountLpBlocked) >= Amount)
          then if(totalAsset1Pool > 2 || totalAsset2Pool > 2)
           then{ 
-            let receiveAsset1 = toInt(fraction(toBigInt(i.payments[0].amount),toBigInt(D8),toBigInt(totalLP))*toBigInt(totalAsset1Pool)/toBigInt(D8))
-            let receiveAsset2 = toInt(fraction(toBigInt(i.payments[0].amount),toBigInt(D8),toBigInt(totalLP))*toBigInt(totalAsset2Pool)/toBigInt(D8))
+            let receiveAsset1 = toInt(fraction(toBigInt(i.payments[0].amount),toBigInt(D8),toBigInt(totalLP))*toBigInt(totalAsset1Pool)/toBigInt(D8)) -1
+            let receiveAsset2 = toInt(fraction(toBigInt(i.payments[0].amount),toBigInt(D8),toBigInt(totalLP))*toBigInt(totalAsset2Pool)/toBigInt(D8)) -1
             let asset1pool = assetP(kp(Asset1, Asset2), Asset1) #get the total amount locked in smart contract for asset1
             let asset2pool = assetP(kp(Asset1, Asset2), Asset2) #get the total amount locked in smart contract for asset2
             let currentAmountAsset1 = poolAA(currentKey, kp(Asset1, Asset2), Asset1) #get amount locked by address for the asset1 if the lp token is not locked
@@ -568,10 +579,18 @@ func swap(Asset1: String, Asset2: String) = {
   let priceAsset1 = toInt((prAsset1 - (prAsset1/toBigInt(feeRatePercentual))*toBigInt(100))/toBigInt(D8))
   let prAsset2 = (toBigInt(i.payments[0].amount)*fraction(toBigInt(D8), toBigInt(totalAsset1), toBigInt(totalAsset2)))
   let priceAsset2 = toInt((prAsset2 - (prAsset2/toBigInt(feeRatePercentual))*toBigInt(100))/toBigInt(D8))
-  let sendValue = if(asset1 == unit && Asset1 == waves) then priceAsset1 else {if(asset1 == fromBase58String(Asset1)) then priceAsset1 else priceAsset2}
-  let assetUpdatePay = if(asset1 == unit) then waves else {if(asset1 == fromBase58String(Asset1)) then Asset1 else Asset2}
-  let assetUpdateSwap = if(asset1 == unit) then waves else {if(asset1 == fromBase58String(Asset1)) then Asset2 else Asset1}
-  let assetSendSwap = if(asset1 == unit) then WAVES else {if(asset1 == fromBase58String(Asset1)) then fromBase58String(Asset2) else fromBase58String(Asset1)}
+  let sendValue = if(asset1 == WAVES && Asset1 == waves) then priceAsset1 else {if(asset1 == fromBase58String(Asset1)) then priceAsset1 else priceAsset2}
+  let assetUpdatePay = if(asset1 == WAVES) then waves else {if(asset1 == fromBase58String(Asset1)) then Asset1 else Asset2}
+  let assetUpdateSwap = if(asset1 == WAVES) then waves else {if(asset1 == fromBase58String(Asset1)) then Asset2 else Asset1}
+  let assetSendSwap = valid(i.payments[0].assetId,Asset1,Asset2)
+  let n1s = assetP(kp(Asset1, Asset2), assetUpdateSwap)-sendValue
+  let nw = getAmountBlockAsset(assetUpdateSwap) - sendValue
+  let newUpda = if(0 > n1s) then 0 else n1s
+  let newUpdateSwap = if(0 > nw) then 0 else nw
+  let D = match i.payments[0].assetId{
+    case o: Unit => pow(10,0,8,0,0,HALFUP)
+    case x: ByteVector => pow(10,0,assetInfo(x).value().decimals,0,0,HALFUP)
+  } 
 
   if(power)
    then if(!(swapActivate))
@@ -583,9 +602,9 @@ func swap(Asset1: String, Asset2: String) = {
           then if(totalAsset1 > 2 || totalAsset2 > 2)
            then{
             [
-               ScriptTransfer(Address(i.caller.bytes), sendValue, assetSendSwap),
-               IntegerEntry(assetUpdateSwap, getAmountBlockAsset(assetUpdateSwap) - sendValue),
-               IntegerEntry(kp(Asset1, Asset2)+"_"+assetUpdateSwap,assetP(kp(Asset1, Asset2), assetUpdateSwap)-sendValue),
+               ScriptTransfer(Address(i.caller.bytes), if(0>sendValue) then D else sendValue, assetSendSwap),
+               IntegerEntry(assetUpdateSwap, newUpdateSwap),
+               IntegerEntry(kp(Asset1, Asset2)+"_"+assetUpdateSwap, newUpda),
                IntegerEntry(kp(Asset1, Asset2)+"_"+assetUpdatePay,assetP(kp(Asset1, Asset2), assetUpdatePay)+(i.payments[0].amount)),
                IntegerEntry(assetUpdatePay, getAmountBlockAsset(assetUpdatePay)+(i.payments[0].amount)),
                IntegerEntry(toBase58String(MainAsset), getAmountBlockAsset(toBase58String(MainAsset)) + i.payments[1].amount)
